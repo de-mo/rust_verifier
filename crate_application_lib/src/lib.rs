@@ -24,6 +24,7 @@
 
 mod extract;
 pub mod report;
+mod results;
 mod run_information;
 mod runner;
 
