@@ -16,7 +16,7 @@
 //
 
 use rust_ev_verifier_lib::{
-    ech_0222::{BallotCasted, BallotRawData, QuestionRawData, VoteRawData},
+    ech_0222::{QuestionRawData, VoteRawData},
     election_event_configuration::{
         Answer, Ballot, StandardOrVariantBallot, StandardQuestion, Vote,
     },
@@ -40,30 +40,30 @@ pub enum BallotResultType {
 
 #[derive(Debug, Clone)]
 pub struct BallotResult {
-    ballot_id: String,
-    ballot_position: usize,
-    results: BallotResultType,
+    pub ballot_id: String,
+    pub ballot_position: usize,
+    pub results: BallotResultType,
 }
 
 #[derive(Debug, Clone)]
 pub struct VariantBallotResult {
-    standard_quesitons: Vec<QuestionResult>,
-    tie_break_questions: Vec<QuestionResult>,
+    pub standard_quesitons: Vec<QuestionResult>,
+    pub tie_break_questions: Vec<QuestionResult>,
 }
 
 #[derive(Debug, Clone)]
 pub struct QuestionResult {
-    question_id: String,
-    answer_1: AnswerResult,
-    answer_2: AnswerResult,
-    empty: usize,
+    pub question_id: String,
+    pub answer_1: AnswerResult,
+    pub answer_2: AnswerResult,
+    pub empty: usize,
 }
 
 #[derive(Debug, Clone)]
 pub struct AnswerResult {
-    answer_id: String,
-    answer_text: HashMap<String, String>,
-    result: usize,
+    pub answer_id: String,
+    pub answer_text: HashMap<String, String>,
+    pub result: usize,
 }
 
 impl VotationResult {

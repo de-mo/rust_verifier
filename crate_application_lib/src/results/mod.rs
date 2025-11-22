@@ -48,8 +48,6 @@ enum ContestResultErrorImpl {
         goal_object: &'static str,
         source: Box<ContestResultErrorImpl>,
     },
-    #[error("No counting circle found for authorization id {auth_id}")]
-    NoCountingCircleFound { auth_id: String },
     #[error("Multiple counting circles found for authorization id {auth_id}")]
     ToManyCountingCirclesFound { auth_id: String },
     #[error("Missing answer with position {answer_position} for question with id {question_id}")]
@@ -77,18 +75,18 @@ enum ContestResultErrorImpl {
 
 #[derive(Debug)]
 pub struct ContestResult {
-    contest_identification: String,
-    contest_date: NaiveDate,
-    counting_circle_result: HashMap<String, CountingCircleResult>,
+    pub contest_identification: String,
+    pub contest_date: NaiveDate,
+    pub counting_circle_result: HashMap<String, CountingCircleResult>,
 }
 
 #[derive(Debug)]
 pub struct CountingCircleResult {
-    counting_circle_id: String,
-    counting_circle_name: String,
-    voting_card_results: VotingCardsInformation,
-    votation_results: HashMap<String, VotationResult>,
-    election_group_results: HashMap<String, ElectionGroupResult>,
+    pub counting_circle_id: String,
+    pub counting_circle_name: String,
+    pub voting_card_results: VotingCardsInformation,
+    pub votation_results: HashMap<String, VotationResult>,
+    pub election_group_results: HashMap<String, ElectionGroupResult>,
 }
 
 impl TryFrom<&ElectionEventConfigurationData> for ContestResult {

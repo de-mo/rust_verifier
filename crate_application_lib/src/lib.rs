@@ -31,6 +31,7 @@ mod runner;
 pub use extract::*;
 use std::path::Path;
 //pub use report::*;
+pub use results::*;
 pub use run_information::RunInformation;
 pub use runner::{
     RunParallel, RunSequential, Runner, RunnerInformation, VerificationRunInformation,

@@ -15,26 +15,23 @@
 // <https://www.gnu.org/licenses/>.
 //
 
-use std::collections::HashMap;
-
+use crate::results::ContestResultErrorImpl;
 use rust_ev_verifier_lib::{
     ech_0222::{CandidateEnum, CandidateOrIsEmpty, ElectionGroupBallotRawData, ElectionRawData},
     election_event_configuration::{Candidate, ElectionGroupBallot, ElectionInformation, List},
 };
-use tracing::field::Empty;
-
-use crate::results::ContestResultErrorImpl;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct ElectionGroupResult {
     pub election_group_id: String,
-    election_results: HashMap<String, ElectionResult>,
+    pub election_results: HashMap<String, ElectionResult>,
 }
 
 #[derive(Debug, Clone)]
 pub struct ElectionResult {
-    election_id: String,
-    election_result: ElectionResultType,
+    pub election_id: String,
+    pub election_result: ElectionResultType,
 }
 
 #[derive(Debug, Clone)]
@@ -45,42 +42,42 @@ pub enum ElectionResultType {
 
 #[derive(Debug, Clone)]
 pub struct MajorityElectionResult {
-    write_ins_allowed: bool,
-    candidate_result: HashMap<String, CandidateResult>,
-    write_ins: Vec<String>,
-    empty_positions: usize,
-    empty_ballots: usize,
+    pub write_ins_allowed: bool,
+    pub candidate_result: HashMap<String, CandidateResult>,
+    pub write_ins: Vec<String>,
+    pub empty_positions: usize,
+    pub empty_ballots: usize,
 }
 
 #[derive(Debug, Clone)]
 pub struct ProportionalElectionResult {
-    emtpy_list_id: String,
-    list_results: HashMap<String, ListResult>,
-    candidate_result: HashMap<String, CandidateResult>,
-    empty_ballots: usize,
+    pub emtpy_list_id: String,
+    pub list_results: HashMap<String, ListResult>,
+    pub candidate_result: HashMap<String, CandidateResult>,
+    pub empty_ballots: usize,
 }
 
 #[derive(Debug, Clone)]
 pub struct CandidateResult {
-    candidate_id: String,
-    candidate_number: String,
-    candidate_name: String,
-    result: usize,
+    pub candidate_id: String,
+    pub candidate_number: String,
+    pub candidate_name: String,
+    pub result: usize,
 }
 
 #[derive(Debug, Clone)]
 pub struct CandidateForListResult {
-    candidate_id: String,
-    candidate_reference_on_pos: String,
+    pub candidate_id: String,
+    pub candidate_reference_on_pos: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct ListResult {
-    list_id: String,
-    list_number: String,
-    list_text: HashMap<String, String>,
-    candidates: HashMap<String, CandidateForListResult>,
-    additional_vote: usize,
+    pub list_id: String,
+    pub list_number: String,
+    pub list_text: HashMap<String, String>,
+    pub candidates: HashMap<String, CandidateForListResult>,
+    pub additional_vote: usize,
 }
 
 impl ElectionGroupResult {
@@ -251,7 +248,7 @@ impl ProportionalElectionResult {
             .as_ref()
             .map(|l| l.list_identification.as_str());
         let mut nb_empty_positions = 0;
-        let mut is_empty_list = match list_id {
+        let is_empty_list = match list_id {
             Some(id) if id == self.emtpy_list_id => true,
             _ => false,
         };
