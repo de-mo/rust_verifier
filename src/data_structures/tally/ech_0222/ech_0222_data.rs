@@ -17,9 +17,9 @@
 use roxmltree::Node;
 
 use super::{
-    ECH0222CalculatedError, ECH0222Difference, ECh0222differencesTrait,
-    election::ElectionGroupBallotRawData, votations::VoteRawData,
+    ECH0222CalculatedError, ECH0222CalculatedErrorImpl, ECH0222Difference, ECh0222differencesTrait,
 };
+pub use super::{election::*, votations::*};
 use crate::{
     data_structures::{
         context::{
@@ -28,10 +28,7 @@ use crate::{
             },
             election_event_context_payload::ElectionEventContext,
         },
-        tally::{
-            ech_0222::ECH0222CalculatedErrorImpl,
-            tally_component_votes_payload::TallyComponentVotesPayload,
-        },
+        tally::tally_component_votes_payload::TallyComponentVotesPayload,
         xml::ElementChildren,
     },
     file_structure::tally_directory::BBDirectoryTrait,
@@ -60,7 +57,7 @@ pub struct CountingCircleRawData {
     pub election_group_ballot_raw_data: Vec<ElectionGroupBallotRawData>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct VotingCardsInformation {
     pub count_of_received_valid_voting_cards_total: usize,
     pub count_of_received_invalid_voting_cards_total: usize,

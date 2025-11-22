@@ -17,11 +17,13 @@
 
 use std::collections::HashMap;
 
-use rust_ev_verifier_lib::election_event_configuration::{
-    Candidate, Election, ElectionGroupBallot, ElectionInformation, List,
+use rust_ev_verifier_lib::{
+    ech_0222::{CandidateEnum, CandidateOrIsEmpty, ElectionGroupBallotRawData, ElectionRawData},
+    election_event_configuration::{Candidate, ElectionGroupBallot, ElectionInformation, List},
 };
+use tracing::field::Empty;
 
-use crate::results::EVotingResultErrorImpl;
+use crate::results::ContestResultErrorImpl;
 
 #[derive(Debug, Clone)]
 pub struct ElectionGroupResult {
@@ -46,14 +48,16 @@ pub struct MajorityElectionResult {
     write_ins_allowed: bool,
     candidate_result: HashMap<String, CandidateResult>,
     write_ins: Vec<String>,
-    empty: usize,
+    empty_positions: usize,
+    empty_ballots: usize,
 }
 
 #[derive(Debug, Clone)]
 pub struct ProportionalElectionResult {
+    emtpy_list_id: String,
     list_results: HashMap<String, ListResult>,
     candidate_result: HashMap<String, CandidateResult>,
-    empty: usize,
+    empty_ballots: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -82,7 +86,7 @@ pub struct ListResult {
 impl ElectionGroupResult {
     pub(super) fn try_from_election_group_ballot(
         value: &ElectionGroupBallot,
-    ) -> Result<Self, EVotingResultErrorImpl> {
+    ) -> Result<Self, ContestResultErrorImpl> {
         let election_results = value
             .election_informations
             .iter()
@@ -90,18 +94,38 @@ impl ElectionGroupResult {
                 let election_result = ElectionResult::try_from_election_information(election)?;
                 Ok((election_result.election_id.clone(), election_result))
             })
-            .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?;
+            .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?;
         Ok(Self {
             election_group_id: value.election_group_identification.clone(),
             election_results,
         })
+    }
+
+    pub(super) fn import_election_group_raw_data(
+        &mut self,
+        eg_raw_data: &ElectionGroupBallotRawData,
+    ) -> Result<(), ContestResultErrorImpl> {
+        for el_raw_data in &eg_raw_data.election_raw_data {
+            if let Some(election_result) = self
+                .election_results
+                .get_mut(&el_raw_data.election_identification)
+            {
+                election_result.import_election_raw_data(el_raw_data)?;
+            } else {
+                return Err(ContestResultErrorImpl::ObjectNotFound {
+                    id: el_raw_data.election_identification.clone(),
+                    object: "Election",
+                });
+            }
+        }
+        Ok(())
     }
 }
 
 impl ElectionResult {
     pub(super) fn try_from_election_information(
         value: &ElectionInformation,
-    ) -> Result<Self, EVotingResultErrorImpl> {
+    ) -> Result<Self, ContestResultErrorImpl> {
         let election_result = match value.election.type_of_election {
             1 => ElectionResultType::Proportional(
                 ProportionalElectionResult::try_from_election_election_information(value)?,
@@ -110,7 +134,7 @@ impl ElectionResult {
                 MajorityElectionResult::try_from_election_information(value)?,
             ),
             n => {
-                return Err(EVotingResultErrorImpl::InvalidElectionType {
+                return Err(ContestResultErrorImpl::InvalidElectionType {
                     election_type: n,
                     election_id: value.election.election_identification.clone(),
                 });
@@ -121,12 +145,26 @@ impl ElectionResult {
             election_result,
         })
     }
+
+    pub(super) fn import_election_raw_data(
+        &mut self,
+        el_raw_data: &ElectionRawData,
+    ) -> Result<(), ContestResultErrorImpl> {
+        match &mut self.election_result {
+            ElectionResultType::Majority(majority_result) => {
+                majority_result.import_election_raw_data(el_raw_data)
+            }
+            ElectionResultType::Proportional(proportional_result) => {
+                proportional_result.import_election_raw_data(el_raw_data)
+            }
+        }
+    }
 }
 
 impl MajorityElectionResult {
     pub(super) fn try_from_election_information(
         value: &ElectionInformation,
-    ) -> Result<Self, EVotingResultErrorImpl> {
+    ) -> Result<Self, ContestResultErrorImpl> {
         Ok(Self {
             write_ins_allowed: value.election.write_ins_allowed,
             candidate_result: value
@@ -136,18 +174,54 @@ impl MajorityElectionResult {
                     let candidate_result = CandidateResult::try_from_candidate(candidate)?;
                     Ok((candidate_result.candidate_id.clone(), candidate_result))
                 })
-                .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?,
+                .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?,
             write_ins: vec![],
-            empty: 0,
+            empty_positions: 0,
+            empty_ballots: 0,
         })
+    }
+
+    pub(super) fn import_election_raw_data(
+        &mut self,
+        el_raw_data: &ElectionRawData,
+    ) -> Result<(), ContestResultErrorImpl> {
+        let mut nb_empty_positions = 0;
+        for ballot_position in el_raw_data.ballot_positions.iter() {
+            match &ballot_position.0 {
+                CandidateOrIsEmpty::Candidate(CandidateEnum::Candidate {
+                    candidate_identification: id,
+                    candidate_reference_on_position: _,
+                }) => {
+                    self.candidate_result
+                        .get_mut(id)
+                        .ok_or(ContestResultErrorImpl::ObjectNotFound {
+                            id: id.clone(),
+                            object: "Candidate",
+                        })?
+                        .result += 1;
+                }
+                CandidateOrIsEmpty::Candidate(CandidateEnum::WriteIn(wi)) => {
+                    self.write_ins.push(wi.clone());
+                }
+                CandidateOrIsEmpty::IsEmpty(_) => {
+                    self.empty_positions += 1;
+                    nb_empty_positions += 1;
+                }
+            }
+        }
+        if nb_empty_positions == el_raw_data.ballot_positions.len() {
+            self.empty_ballots += 1;
+        }
+        Ok(())
     }
 }
 
 impl ProportionalElectionResult {
     pub(super) fn try_from_election_election_information(
         value: &ElectionInformation,
-    ) -> Result<Self, EVotingResultErrorImpl> {
+    ) -> Result<Self, ContestResultErrorImpl> {
         Ok(Self {
+            emtpy_list_id: value.empty_list.list_identification.clone(),
             list_results: value
                 .lists
                 .iter()
@@ -155,7 +229,7 @@ impl ProportionalElectionResult {
                     let list_result = ListResult::try_from_list(l)?;
                     Ok((list_result.list_id.clone(), list_result))
                 })
-                .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?,
+                .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?,
             candidate_result: value
                 .candidates
                 .iter()
@@ -163,14 +237,72 @@ impl ProportionalElectionResult {
                     let candidate_result = CandidateResult::try_from_candidate(candidate)?;
                     Ok((candidate_result.candidate_id.clone(), candidate_result))
                 })
-                .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?,
-            empty: 0,
+                .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?,
+            empty_ballots: 0,
         })
+    }
+
+    pub(super) fn import_election_raw_data(
+        &mut self,
+        el_raw_data: &ElectionRawData,
+    ) -> Result<(), ContestResultErrorImpl> {
+        let list_id = el_raw_data
+            .list_raw_data
+            .as_ref()
+            .map(|l| l.list_identification.as_str());
+        let mut nb_empty_positions = 0;
+        let mut is_empty_list = match list_id {
+            Some(id) if id == self.emtpy_list_id => true,
+            _ => false,
+        };
+        let mut list = match is_empty_list {
+            false => match list_id {
+                Some(id) => Some(self.list_results.get_mut(id).ok_or(
+                    ContestResultErrorImpl::ObjectNotFound {
+                        id: id.to_string(),
+                        object: "Election",
+                    },
+                )?),
+                None => None,
+            },
+            true => None,
+        };
+        for ballot_position in el_raw_data.ballot_positions.iter() {
+            match &ballot_position.0 {
+                CandidateOrIsEmpty::Candidate(CandidateEnum::Candidate {
+                    candidate_identification: id,
+                    candidate_reference_on_position: _,
+                }) => {
+                    self.candidate_result
+                        .get_mut(id)
+                        .ok_or(ContestResultErrorImpl::ObjectNotFound {
+                            id: id.clone(),
+                            object: "Candidate",
+                        })?
+                        .result += 1;
+                }
+                CandidateOrIsEmpty::Candidate(CandidateEnum::WriteIn(_)) => {
+                    return Err(ContestResultErrorImpl::NoWriteInPropotional);
+                }
+                CandidateOrIsEmpty::IsEmpty(_) => {
+                    if let Some(list) = &mut list {
+                        list.additional_vote += 1;
+                    }
+                    if is_empty_list {
+                        nb_empty_positions += 1;
+                    }
+                }
+            }
+        }
+        if is_empty_list && nb_empty_positions == el_raw_data.ballot_positions.len() {
+            self.empty_ballots += 1;
+        }
+        Ok(())
     }
 }
 
 impl CandidateResult {
-    pub(super) fn try_from_candidate(value: &Candidate) -> Result<Self, EVotingResultErrorImpl> {
+    pub(super) fn try_from_candidate(value: &Candidate) -> Result<Self, ContestResultErrorImpl> {
         Ok(Self {
             candidate_id: value.candidate_identification.clone(),
             candidate_number: value.reference_on_position.clone(),
@@ -181,7 +313,7 @@ impl CandidateResult {
 }
 
 impl ListResult {
-    pub(super) fn try_from_list(value: &List) -> Result<Self, EVotingResultErrorImpl> {
+    pub(super) fn try_from_list(value: &List) -> Result<Self, ContestResultErrorImpl> {
         Ok(Self {
             list_id: value.list_identification.clone(),
             list_number: value.list_indenture_number.clone(),
@@ -195,7 +327,7 @@ impl ListResult {
                         text_info.list_description.clone(),
                     ))
                 })
-                .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?,
+                .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?,
             candidates: value
                 .candidate_positions
                 .iter()
@@ -211,7 +343,7 @@ impl ListResult {
                         candidate_for_list_result,
                     ))
                 })
-                .collect::<Result<HashMap<_, _>, EVotingResultErrorImpl>>()?,
+                .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?,
             additional_vote: 0,
         })
     }

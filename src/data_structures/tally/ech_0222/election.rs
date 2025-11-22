@@ -49,12 +49,12 @@ pub struct BallotPosition(pub CandidateOrIsEmpty);
 
 #[derive(Debug, Clone, Hash)]
 pub enum CandidateOrIsEmpty {
-    Candidate(Candidate),
+    Candidate(CandidateEnum),
     IsEmpty(bool),
 }
 
 #[derive(Debug, Clone, Hash)]
-pub enum Candidate {
+pub enum CandidateEnum {
     Candidate {
         candidate_identification: String,
         candidate_reference_on_position: String,
@@ -262,7 +262,7 @@ impl ElectionRawData {
                     ballot_positions
                         .iter()
                         .filter_map(|bp| {
-                            if let CandidateOrIsEmpty::Candidate(Candidate::Candidate {
+                            if let CandidateOrIsEmpty::Candidate(CandidateEnum::Candidate {
                                 candidate_identification,
                                 candidate_reference_on_position: _,
                             }) = &bp.0
@@ -334,7 +334,7 @@ impl CandidateOrIsEmpty {
     pub(super) fn from_node(node: &Node) -> Self {
         match node.has_tag_name("isEmpty") {
             true => Self::IsEmpty(true),
-            false => Self::Candidate(Candidate::from_node(node)),
+            false => Self::Candidate(CandidateEnum::from_node(node)),
         }
     }
 
@@ -344,7 +344,9 @@ impl CandidateOrIsEmpty {
         list_id: Option<&str>,
     ) -> Result<Self, ECH0222CalculatedErrorImpl> {
         if let Some(write_in) = relevant_decode_votes_with_write_ins.write_in {
-            return Ok(Self::Candidate(Candidate::WriteIn(write_in.to_string())));
+            return Ok(Self::Candidate(CandidateEnum::WriteIn(
+                write_in.to_string(),
+            )));
         }
         match election_information.type_of_id(
             relevant_decode_votes_with_write_ins.second_position,
@@ -362,7 +364,7 @@ impl CandidateOrIsEmpty {
                 TypeOfIdInElection::Candidate {
                     id,
                     candidate_reference_on_position,
-                } => Ok(Self::Candidate(Candidate::Candidate {
+                } => Ok(Self::Candidate(CandidateEnum::Candidate {
                     candidate_identification: id.to_string(),
                     candidate_reference_on_position: candidate_reference_on_position.to_string(),
                 })),
@@ -381,7 +383,7 @@ impl CandidateOrIsEmpty {
     }
 }
 
-impl Candidate {
+impl CandidateEnum {
     pub(super) fn from_node(node: &Node) -> Self {
         let first_element = node.first_element_child().unwrap();
         let first_element_text_str = first_element.text().unwrap();

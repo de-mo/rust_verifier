@@ -33,7 +33,7 @@ use crate::{
     direct_trust::{CertificateAuthority, VerifiySignatureTrait, VerifiyXMLSignatureTrait},
     file_structure::FileStructureError,
 };
-pub use ech_0222_data::ECH0222Data;
+pub use ech_0222_data::*;
 use roxmltree::Document;
 use std::{fmt::Display, sync::Arc};
 use thiserror::Error;
