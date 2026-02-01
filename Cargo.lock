@@ -1471,7 +1471,7 @@ dependencies = [
  "rayon",
  "rust_ev_system_library",
  "rust_ev_verifier_application_lib",
- "rust_ev_verifier_lib",
+ "rust_ev_verifier_lib 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "strum",
@@ -1489,6 +1489,29 @@ dependencies = [
  "glob",
  "lazy_static",
  "paste",
+ "rayon",
+ "regex",
+ "roxmltree",
+ "rust_ev_system_library",
+ "serde",
+ "serde_json",
+ "strum",
+ "thiserror",
+ "tracing",
+ "zip 7.2.0",
+]
+
+[[package]]
+name = "rust_ev_verifier_lib"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbbee326bb479ac5324022474b68564b550a3a5b86b25103d88f9cbf681807c7"
+dependencies = [
+ "chrono",
+ "dotenvy",
+ "enum-kinds",
+ "glob",
+ "lazy_static",
  "rayon",
  "regex",
  "roxmltree",
