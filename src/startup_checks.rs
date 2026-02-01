@@ -15,9 +15,9 @@
 // <https://www.gnu.org/licenses/>.
 
 use crate::{
+    VerifierConfig,
     file_structure::{CompletnessTestTrait, VerificationDirectory, VerificationDirectoryTrait},
     verification::{VerificationMetaDataList, VerificationPeriod},
-    VerifierConfig,
 };
 use std::path::Path;
 
@@ -26,11 +26,8 @@ use std::path::Path;
 /// Must be called by the application at the beginning. If error, then cannot continue
 pub fn start_check(config: &'static VerifierConfig) -> Result<(), String> {
     let md_list_check = VerificationMetaDataList::load(config.get_verification_list_str());
-    if md_list_check.is_err() {
-        return Err(format!(
-            "List of verifications has an error: {}",
-            md_list_check.unwrap_err()
-        ));
+    if let Err(e) = md_list_check {
+        return Err(format!("List of verifications has an error: {}", e));
     }
     config
         .keystore()

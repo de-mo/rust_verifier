@@ -405,18 +405,16 @@ where
     ) -> Result<(), RunnerError> {
         self.start_time = None;
         self.duration = None;
-        self.verifications = Box::new(
-            VerificationSuite::new(
-                self.period(),
-                metadata_list,
-                self.verifications.exclusion(),
-                self.config,
-            )
-            .map_err(|e| RunnerErrorImpl::Suite {
-                function: "reset runner",
-                source: Box::new(e),
-            })?,
-        );
+        *self.verifications = VerificationSuite::new(
+            self.period(),
+            metadata_list,
+            self.verifications.exclusion(),
+            self.config,
+        )
+        .map_err(|e| RunnerErrorImpl::Suite {
+            function: "reset runner",
+            source: Box::new(e),
+        })?;
         Ok(())
     }
 
@@ -515,8 +513,8 @@ where
     }
 
     pub fn stop_time(&self) -> Option<SystemTime> {
-        if self.start_time.is_some() && self.duration.is_some() {
-            return Some(self.start_time.unwrap() + self.duration.unwrap());
+        if let (Some(start_time), Some(duration)) = (self.start_time, self.duration) {
+            return Some(start_time + duration);
         }
         None
     }

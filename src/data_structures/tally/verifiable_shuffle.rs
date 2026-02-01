@@ -40,7 +40,7 @@ pub struct VerifiableShuffle {
 }
 
 pub fn verifiy_domain_for_verifiable_shuffle(value: &VerifiableShuffle) -> Vec<String> {
-    value.verifiy_domain(&EmptyContext::default())
+    value.verifiy_domain(&EmptyContext)
 }
 
 impl VerifyDomainTrait<EmptyContext, String> for VerifiableShuffle {
