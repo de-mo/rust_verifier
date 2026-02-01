@@ -545,7 +545,7 @@ mod test {
     fn error_election_event_id() {
         let mut ee = get_data_res().unwrap();
         ee.election_event_context.election_event_id = "1234345".to_string();
-        assert!(!ee.verifiy_domain(&EmptyContext::default()).is_empty());
+        assert!(!ee.verifiy_domain(&EmptyContext).is_empty());
     }
 }
 
@@ -564,7 +564,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(res.is_empty(), "{:?}", res);
     }
 
@@ -580,7 +580,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(!res.is_empty());
     }
 
@@ -605,7 +605,7 @@ mod test_domain {
                 .context()
                 .election_event_context_payload()
                 .unwrap()
-                .verifiy_domain(&EmptyContext::default());
+                .verifiy_domain(&EmptyContext);
             assert!(!res.is_empty());
         }
     }
@@ -631,7 +631,7 @@ mod test_domain {
                 .context()
                 .election_event_context_payload()
                 .unwrap()
-                .verifiy_domain(&EmptyContext::default());
+                .verifiy_domain(&EmptyContext);
             assert!(!res.is_empty());
         }
     }
@@ -646,7 +646,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(!res.is_empty());
     }
 
@@ -660,7 +660,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(!res.is_empty());
     }
 
@@ -674,7 +674,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(!res.is_empty());
     }
 
@@ -693,7 +693,7 @@ mod test_domain {
             .context()
             .election_event_context_payload()
             .unwrap()
-            .verifiy_domain(&EmptyContext::default());
+            .verifiy_domain(&EmptyContext);
         assert!(!res.is_empty());
     }
 
@@ -718,7 +718,7 @@ mod test_domain {
                 .context()
                 .election_event_context_payload()
                 .unwrap()
-                .verifiy_domain(&EmptyContext::default());
+                .verifiy_domain(&EmptyContext);
             assert!(!res.is_empty(), "Seed tested: {}", seed);
         }
     }

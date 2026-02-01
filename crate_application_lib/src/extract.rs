@@ -18,7 +18,7 @@ use crate::RunnerErrorImpl;
 
 use super::RunnerError;
 use rust_ev_verifier_lib::{
-    dataset::DatasetMetadata, verification::VerificationPeriod, DatasetTypeKind, VerifierConfig,
+    DatasetTypeKind, VerifierConfig, dataset::DatasetMetadata, verification::VerificationPeriod,
 };
 use std::{
     collections::HashMap,
@@ -65,12 +65,10 @@ impl ExtractDataSetResults {
         match period {
             VerificationPeriod::Setup => {}
             VerificationPeriod::Tally => {
-                if tally_zip_file.is_none() {
-                    return Err(RunnerErrorImpl::ExtractFileMissing { period: "tally" });
-                } else {
+                if let Some(tally_zip_file) = tally_zip_file {
                     let md = DatasetMetadata::extract_dataset_kind_with_inputs(
                         DatasetTypeKind::Tally,
-                        tally_zip_file.unwrap(),
+                        tally_zip_file,
                         password,
                         &dataset_root_path,
                         &config.zip_temp_dir_path(),
@@ -85,6 +83,8 @@ impl ExtractDataSetResults {
                         md.fingerprint_str()
                     );
                     hm.insert(DatasetTypeKind::Tally, md);
+                } else {
+                    return Err(RunnerErrorImpl::ExtractFileMissing { period: "tally" });
                 }
             }
         }

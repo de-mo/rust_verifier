@@ -30,6 +30,7 @@ use chrono::NaiveDate;
 use rust_ev_system_library::rust_ev_crypto_primitives::prelude::EncodeTrait;
 use std::{collections::HashMap, sync::Arc};
 
+#[allow(clippy::type_complexity)]
 pub struct VerificationErrorsFailureInformation(Vec<(String, (Vec<String>, Vec<String>))>);
 
 /// Trait to get the information of the manual verifications in form of string

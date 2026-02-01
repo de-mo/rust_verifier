@@ -51,7 +51,7 @@ pub fn get_verifications<'a>(
 fn validate_context_vcs_dir<V: ContextVCSDirectoryTrait>(dir: &V, result: &mut VerificationResult) {
     match dir.setup_component_tally_data_payload() {
         Ok(d) => {
-            for e in d.verifiy_domain(&EmptyContext::default()) {
+            for e in d.verifiy_domain(&EmptyContext) {
                 result.push(VerificationEvent::new_failure(&e).add_context(format!(
                     "Error verifying domain for {}/setup_component_tally_data_payload",
                     dir.name()
@@ -68,7 +68,7 @@ fn validate_context_vcs_dir<V: ContextVCSDirectoryTrait>(dir: &V, result: &mut V
 fn validate_context_dir<C: ContextDirectoryTrait>(dir: &C, result: &mut VerificationResult) {
     match dir.election_event_context_payload() {
         Ok(d) => {
-            for e in d.verifiy_domain(&EmptyContext::default()) {
+            for e in d.verifiy_domain(&EmptyContext) {
                 result.push(
                     VerificationEvent::new_failure(&e)
                         .add_context("Error verifying domain for election_event_context_payload"),
@@ -82,7 +82,7 @@ fn validate_context_dir<C: ContextDirectoryTrait>(dir: &C, result: &mut Verifica
     }
     match dir.setup_component_public_keys_payload() {
         Ok(d) => {
-            for e in d.verifiy_domain(&EmptyContext::default()) {
+            for e in d.verifiy_domain(&EmptyContext) {
                 result.push(
                     VerificationEvent::new_failure(&e).add_context(
                         "Error verifying domain for setup_component_public_keys_payload",
@@ -97,7 +97,7 @@ fn validate_context_dir<C: ContextDirectoryTrait>(dir: &C, result: &mut Verifica
     }
     match dir.election_event_configuration() {
         Ok(d) => {
-            for e in d.verifiy_domain(&EmptyContext::default()) {
+            for e in d.verifiy_domain(&EmptyContext) {
                 result.push(
                     VerificationEvent::new_failure(&e)
                         .add_context("Error verifying domain for election_event_configuration"),
@@ -112,7 +112,7 @@ fn validate_context_dir<C: ContextDirectoryTrait>(dir: &C, result: &mut Verifica
     for (i, f) in dir.control_component_public_keys_payload_iter() {
         match f {
             Ok(d) => {
-                for e in d.verifiy_domain(&EmptyContext::default()) {
+                for e in d.verifiy_domain(&EmptyContext) {
                     result.push(VerificationEvent::new_failure(&e).add_context(format!(
                         "Error verifying domain for control_component_public_keys_payload.{i}"
                     )))

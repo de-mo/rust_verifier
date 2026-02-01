@@ -334,7 +334,7 @@ mod test {
             let bb = &dir.unwrap_tally().bb_directories()[i];
             if bb
                 .control_component_ballot_box_payload_iter()
-                .nth(0)
+                .next()
                 .unwrap()
                 .1
                 .unwrap()
