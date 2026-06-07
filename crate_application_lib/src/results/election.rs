@@ -248,10 +248,7 @@ impl ProportionalElectionResult {
             .as_ref()
             .map(|l| l.list_identification.as_str());
         let mut nb_empty_positions = 0;
-        let is_empty_list = match list_id {
-            Some(id) if id == self.emtpy_list_id => true,
-            _ => false,
-        };
+        let is_empty_list = matches!(list_id, Some(id) if id == self.emtpy_list_id);
         let mut list = match is_empty_list {
             false => match list_id {
                 Some(id) => Some(self.list_results.get_mut(id).ok_or(

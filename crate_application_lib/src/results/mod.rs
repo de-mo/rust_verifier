@@ -93,8 +93,7 @@ impl TryFrom<&ElectionEventConfigurationData> for ContestResult {
     type Error = ContestResultError;
 
     fn try_from(value: &ElectionEventConfigurationData) -> std::result::Result<Self, Self::Error> {
-        Self::try_from_election_event_configuration_data(value)
-            .map_err(|e| ContestResultError::from(e))
+        Self::try_from_election_event_configuration_data(value).map_err(ContestResultError::from)
     }
 }
 
@@ -148,14 +147,14 @@ impl ContestResult {
 
         Ok(Self {
             contest_identification: value.contest.contest_identification.clone(),
-            contest_date: value.contest.contest_date.clone(),
+            contest_date: value.contest.contest_date,
             counting_circle_result,
         })
     }
 
     pub fn import_ech02222(&mut self, ech0222: &ECH0222Data) -> Result<(), ContestResultError> {
         self.import_ech02222_impl(ech0222)
-            .map_err(|e| ContestResultError::from(e))
+            .map_err(ContestResultError::from)
     }
 
     fn import_ech02222_impl(
@@ -236,7 +235,7 @@ impl CountingCircleResult {
             counting_circle_name,
             voting_card_results: VotingCardsInformation::default(),
             votation_results: votations_results,
-            election_group_results: election_group_results,
+            election_group_results,
         })
     }
 

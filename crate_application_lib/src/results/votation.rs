@@ -78,7 +78,7 @@ impl VotationResult {
             .collect::<Result<HashMap<_, _>, ContestResultErrorImpl>>()?;
         Ok(Self {
             vote_id: value.vote_identification.clone(),
-            vote_position: value.vote_position.clone(),
+            vote_position: value.vote_position,
             ballot_results,
         })
     }
@@ -95,7 +95,7 @@ impl VotationResult {
                     object: "Ballot",
                 })?
                 .results
-                .import_question_raw_data(&ballot.ballot_casted.question_raw_data.as_slice())
+                .import_question_raw_data(ballot.ballot_casted.question_raw_data.as_slice())
                 .map_err(|e| ContestResultErrorImpl::ImportError {
                     id: ballot.electronic_ballot_identification.clone(),
                     import_object: "Ballot Casted",
@@ -130,12 +130,12 @@ impl BallotResultType {
                     standard_quesitons: variant_ballot
                         .standard_questions
                         .iter()
-                        .map(|q| QuestionResult::try_from_ballot(q))
+                        .map(QuestionResult::try_from_ballot)
                         .collect::<Result<_, _>>()?,
                     tie_break_questions: variant_ballot
                         .tie_break_questions
                         .iter()
-                        .map(|q| QuestionResult::try_from_ballot(q))
+                        .map(QuestionResult::try_from_ballot)
                         .collect::<Result<_, _>>()?,
                 }))
             }
@@ -147,7 +147,7 @@ impl BallotResultType {
         question_raw_data: &[QuestionRawData],
     ) -> Result<(), ContestResultErrorImpl> {
         for question in question_raw_data.iter() {
-            match self {
+            /*match self {
                 BallotResultType::Simple(question_result) => {
                     if question.question_identification != question.question_identification {
                         return Err(ContestResultErrorImpl::MismatchedQuestionId {
@@ -176,7 +176,7 @@ impl BallotResultType {
                     }
                     q.unwrap().import_question_raw_data(question)?;
                 }
-            };
+            };*/
         }
         Ok(())
     }
@@ -218,8 +218,8 @@ impl QuestionResult {
         &mut self,
         question_raw_data: &QuestionRawData,
     ) -> Result<(), ContestResultErrorImpl> {
-        match question_raw_data.casted.as_ref() {
-            Some(casted) => match casted.casted_vote {
+        if let Some(casted) = question_raw_data.casted.as_ref() {
+            match casted.casted_vote {
                 1 => {
                     self.answer_1.result += 1;
                 }
@@ -230,8 +230,7 @@ impl QuestionResult {
                     self.empty += 1;
                 }
                 _ => (),
-            },
-            None => (),
+            }
         }
         Ok(())
     }
