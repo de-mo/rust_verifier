@@ -50,6 +50,7 @@ pub struct Candidate {
 #[derive(Debug, Clone)]
 pub struct List {
     pub list_identification: String,
+    pub list_indenture_number: String,
     pub list_description: ListDescription,
     pub candidate_positions: Vec<CandidatePosition>,
 }
@@ -357,7 +358,7 @@ impl List {
     fn from_node(node: &Node) -> Self {
         let mut children = node.element_children();
         let list_identification = children.next().unwrap().text().unwrap().to_string();
-        children.next(); // listIndentureNumber
+        let list_indenture_number = children.next().unwrap().text().unwrap().to_string();
         let list_description = children
             .next()
             .map(|n| ListDescription::from_node(&n))
@@ -365,6 +366,7 @@ impl List {
         Self {
             list_identification,
             list_description,
+            list_indenture_number,
             candidate_positions: node
                 .element_children()
                 .filter(|n| n.has_tag_name("candidatePosition"))

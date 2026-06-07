@@ -92,6 +92,7 @@ pub struct DomainOfInfluence {
 #[derive(Debug, Clone)]
 pub struct CountingCircle {
     pub counting_circle_identification: String,
+    pub counting_circle_name: String,
 }
 
 #[derive(Debug, Clone)]
@@ -349,9 +350,11 @@ impl DomainOfInfluence {
 
 impl CountingCircle {
     fn from_node(node: &Node) -> Self {
+        let first_child = node.first_element_child().unwrap();
         Self {
-            counting_circle_identification: node
-                .first_element_child()
+            counting_circle_identification: first_child.text().unwrap().to_string(),
+            counting_circle_name: first_child
+                .next_sibling_element()
                 .unwrap()
                 .text()
                 .unwrap()

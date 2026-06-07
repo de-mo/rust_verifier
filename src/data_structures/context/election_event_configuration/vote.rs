@@ -67,6 +67,7 @@ pub struct BallotQuestionInfo {
 pub struct Answer {
     pub answer_identification: String,
     pub answer_position: usize,
+    pub standard_answer_type: String,
     pub hidden_answer: Option<bool>,
     pub answer_info: Vec<AnswerInfo>,
 }
@@ -255,9 +256,11 @@ impl Answer {
             .unwrap()
             .parse::<usize>()
             .unwrap();
+        let standard_answer_type = children.next().unwrap().text().unwrap().to_string();
         Self {
             answer_identification,
             answer_position,
+            standard_answer_type,
             hidden_answer: node
                 .element_children()
                 .find(|n| n.has_tag_name("hiddenAnswer"))

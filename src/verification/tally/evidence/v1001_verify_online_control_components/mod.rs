@@ -135,7 +135,7 @@ fn verify_for_ballotbox<B: BBDirectoryTrait, S: ContextVCSDirectoryTrait>(
         .iter()
         .map(|cc| (cc.node_id, cc.ccmj_election_public_key.as_slice()))
         .collect::<Vec<_>>();
-    ccm_el_pk_with_node.sort_by(|(i, _), (j, _)| i.cmp(j));
+    ccm_el_pk_with_node.sort_by_key(|(i, _)| *i);
     let ccm_el_pk = ccm_el_pk_with_node
         .iter()
         .map(|(_, el_pk)| *el_pk)
@@ -218,7 +218,7 @@ fn verify_for_ballotbox<B: BBDirectoryTrait, S: ContextVCSDirectoryTrait>(
         Ok(data) => data,
         Err(e) => return VerificationResult::from(&e),
     };
-    control_component_shuffle_payloads.sort_by(|(i, _), (j, _)| i.cmp(j));
+    control_component_shuffle_payloads.sort_by_key(|(i, _)| *i);
 
     let cs_mix = control_component_shuffle_payloads
         .iter()

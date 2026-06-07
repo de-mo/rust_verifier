@@ -386,8 +386,8 @@ pub(crate) mod test {
     const BB_ID_ONE_VOTE: &str = "A1294A24715FF21B338AE787D3133BF8";
     const BB_ID_ZERO_VOTE: &str = "EC4904FDF96874D200E5A92C193E82DF";
     const BB_ID_MANY_VOTES: &str = "B254D890D50083B12B9447D0E5992234";
-    const CONTEXT_ZIP_FILENAME: &str = "Context_Post_E2E_DEV_2025-08-02.zip";
-    const TALLY_ZIP_FILENAME: &str = "Tally_Post_E2E_DEV_2025-08-02.zip";
+    const CONTEXT_ZIP_FILENAME: &str = "Context_Post_E2E_DEV_2026-06-07.zip";
+    const TALLY_ZIP_FILENAME: &str = "Tally_Post_E2E_DEV_2026-06-07.zip";
     const TEST_DECRYPT_ZIP_PASSWORD: &str = "LongPassword_Encryption1";
 
     lazy_static! {

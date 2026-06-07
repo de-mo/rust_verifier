@@ -76,5 +76,19 @@ pub mod startup_checks;
 pub mod verification;
 
 pub use config::{VerifierConfig, VerifierConfigError};
-pub use data_structures::{DatasetType, dataset::DatasetTypeKind};
+pub use data_structures::{DatasetType, VerifierDataDecode, dataset::DatasetTypeKind};
+pub mod election_event_configuration {
+    pub use crate::data_structures::context::election_event_configuration::*;
+}
+pub mod ech_0222 {
+    pub use crate::data_structures::tally::ech_0222::*;
+}
 pub use error_utils::{ErrorChain, Report};
+
+pub mod rust_ev_system_library {
+    pub use rust_ev_system_library::*;
+}
+
+pub mod rust_ev_crypto_primitives {
+    pub use rust_ev_system_library::rust_ev_crypto_primitives::*;
+}
