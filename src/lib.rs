@@ -84,3 +84,11 @@ pub mod ech_0222 {
     pub use crate::data_structures::tally::ech_0222::*;
 }
 pub use error_utils::{ErrorChain, Report};
+
+pub mod rust_ev_system_library {
+    pub use rust_ev_system_library::*;
+}
+
+pub mod rust_ev_crypto_primitives {
+    pub use rust_ev_system_library::rust_ev_crypto_primitives::*;
+}

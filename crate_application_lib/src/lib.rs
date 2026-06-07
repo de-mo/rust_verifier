@@ -96,10 +96,11 @@ fn prepare_fixed_based_optimization(dir: &VerificationDirectory) -> Result<(), R
     let context = context_dir
         .election_event_context_payload()
         .map_err(|e| RunnerErrorImpl::EEContextPrepareFixedBased { source: e })?;
-    let _ = rust_ev_system_library::rust_ev_crypto_primitives::prelude::prepare_fixed_based_optimization(
-        context.encryption_group.g(),
-        context.encryption_group.p(),
-    );
+    let _ =
+        rust_ev_verifier_lib::rust_ev_crypto_primitives::prelude::prepare_fixed_based_optimization(
+            context.encryption_group.g(),
+            context.encryption_group.p(),
+        );
     Ok(())
 }
 
