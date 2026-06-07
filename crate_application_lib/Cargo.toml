@@ -15,7 +15,6 @@ exclude = ["test_temp_dir"]
 [dependencies]
 #rust_ev_verifier_lib = "0.4.4"
 rust_ev_verifier_lib = { path = ".." }
-rust_ev_system_library.workspace = true
 thiserror.workspace = true
 rayon.workspace = true
 serde.workspace = true
