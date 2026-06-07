@@ -10,7 +10,7 @@ It is based on the specifications of Swiss Post, according to the following docu
 - [System Specifications](https://gitlab.com/swisspost-evoting/e-voting/e-voting-documentation/-/blob/master/System/System_Specification.pdf)
 - [Verifier Specifications](https://gitlab.com/swisspost-evoting/e-voting/e-voting-documentation/-/blob/master/System/Verifier_Specification.pdf?ref_type=heads)
 
-The verifier is implemented for the version 1.5.2 of the E-Voting system of Swiss Post.
+The verifier is implemented for the version 1.5.4 of the E-Voting system of Swiss Post.
 
 This crate is used as basis for a GUI application.
 
