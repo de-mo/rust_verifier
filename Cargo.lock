@@ -1575,7 +1575,7 @@ dependencies = [
 
 [[package]]
 name = "rust_ev_verifier_application_lib"
-version = "0.4.4"
+version = "0.4.5"
 dependencies = [
  "build_html",
  "chrono",
@@ -1585,7 +1585,7 @@ dependencies = [
  "headless_chrome",
  "rayon",
  "rust_ev_verifier_application_lib",
- "rust_ev_verifier_lib",
+ "rust_ev_verifier_lib 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "strum 0.28.0",
@@ -1595,7 +1595,7 @@ dependencies = [
 
 [[package]]
 name = "rust_ev_verifier_lib"
-version = "0.4.4"
+version = "0.4.5"
 dependencies = [
  "chrono",
  "dotenvy",
@@ -1603,6 +1603,29 @@ dependencies = [
  "glob",
  "lazy_static",
  "paste",
+ "rayon",
+ "regex",
+ "roxmltree",
+ "rust_ev_system_library",
+ "serde",
+ "serde_json",
+ "strum 0.28.0",
+ "thiserror",
+ "tracing",
+ "zip 8.6.0",
+]
+
+[[package]]
+name = "rust_ev_verifier_lib"
+version = "0.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2fc4e4f4e13aa2f4b6615620a09b808a69f2ff7c2093c8674c2b05a7f3cd6112"
+dependencies = [
+ "chrono",
+ "dotenvy",
+ "enum-kinds",
+ "glob",
+ "lazy_static",
  "rayon",
  "regex",
  "roxmltree",
