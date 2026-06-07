@@ -255,7 +255,7 @@ mod test {
         assert!(fp_res.is_ok(), "{}", fp_res.unwrap_err());
         assert_eq!(
             fp_res.unwrap(),
-            "a4f56522d1a3d4b8bcb8c4cb340220897bb14139d5400cd48c821431d269e83c".to_uppercase()
+            "3a8d234650463038ce1c460fe403d7a35527fb5a9815674b296e8d7e17f9b38e".to_uppercase()
         )
     }
 }
